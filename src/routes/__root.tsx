@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { Header } from "@/components/site/Header";
+import { Footer } from "@/components/site/Footer";
 
 function NotFoundComponent() {
   return (
@@ -72,11 +74,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Bar Estilo — Spanish kitchen, Shoreditch" },
+      { name: "description", content: "Bar Estilo — a candlelit Spanish kitchen in Shoreditch. Wood-fired tapas, natural wine, late tables." },
+      { property: "og:title", content: "Bar Estilo — Spanish kitchen, Shoreditch" },
+      { property: "og:description", content: "Wood-fired tapas, natural wine, late tables." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -113,7 +114,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="min-h-screen bg-cream text-ink">
+        <Header />
+        <main className="animate-pagefade">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </QueryClientProvider>
   );
 }
