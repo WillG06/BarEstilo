@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import type { ReactNode } from "react";
 
 /**
  * Decorative sage-green line-art leaves.
@@ -11,7 +12,7 @@ export function Leaves({
   className?: string;
   variant?: "sprig" | "branch" | "fern";
 }) {
-  const paths: Record<string, JSX.Element> = {
+  const paths: Record<string, ReactNode> = {
     sprig: (
       <>
         <path d="M100 10 C 100 80, 100 160, 100 230" />
