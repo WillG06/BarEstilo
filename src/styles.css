@@ -183,3 +183,37 @@
   to { opacity: 1; transform: none; }
 }
 .animate-pagefade { animation: pagefade .6s cubic-bezier(.16,.84,.24,1) both; }
+
+/* Film grain overlay */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: .18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.grain-light::before { opacity: .08; mix-blend-mode: multiply; }
+
+/* Sage leaves drift */
+@keyframes leafdrift {
+  0%   { transform: translateY(0)   rotate(0deg); }
+  50%  { transform: translateY(-12px) rotate(4deg); }
+  100% { transform: translateY(0)   rotate(0deg); }
+}
+.animate-leafdrift { animation: leafdrift 9s ease-in-out infinite; transform-origin: center; }
+
+/* Custom cursor */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+}
+
+/* Sage palette */
+:root { --sage: oklch(0.68 0.07 145); }
+@theme inline { --color-sage: var(--sage); }
+
+/* Hide scrollbars on horizontal marquee rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
