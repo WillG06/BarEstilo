@@ -45,7 +45,7 @@ function HomePage() {
   );
 }
 
-/* ───────────────────── HERO ─ rotating scenery */
+/* ───────────────────── HERO */
 const HERO_SCENES = [
   { img: heroInterior, t: "01 / The Room", s: "Forty seats, candlelight, the low hum of conversation." },
   { img: heroTapas, t: "02 / The Kitchen", s: "Wood-fired, hand-cured, plated without ceremony." },
@@ -83,7 +83,6 @@ function Hero() {
       </motion.div>
 
       <motion.div style={{ opacity }} className="relative z-10 mx-auto flex h-full max-w-[1800px] flex-col justify-between px-6 pt-32 pb-12 md:px-10 md:pb-16">
-        {/* small caption top-left */}
         <div className="flex justify-end pt-4 md:pt-0">
           <AnimatePresence mode="wait">
             <motion.div
@@ -100,14 +99,14 @@ function Hero() {
           </AnimatePresence>
         </div>
 
-        {/* big title bottom-left */}
         <div>
           <div className="overflow-hidden">
             <motion.h1
               initial={{ y: "100%" }}
               animate={{ y: "0%" }}
               transition={{ duration: 1.2, ease: [0.16, 0.84, 0.24, 1], delay: 0.1 }}
-              className="font-display text-[clamp(4.5rem,14vw,15rem)] leading-[0.85] tracking-[-0.03em]"
+              className="text-[clamp(4.5rem,14vw,15rem)] leading-[0.85] tracking-[-0.02em]"
+              style={{ fontFamily: "'Rubik Dirt', system-ui, sans-serif" }}
             >
               Bar <span className="italic text-gold">Estilo</span>
             </motion.h1>
@@ -161,7 +160,7 @@ function Marquee() {
   );
 }
 
-/* ───────────────────── DISCIPLINES (HBA-style word list) */
+/* ───────────────────── DISCIPLINES */
 const DISCIPLINES = [
   { k: "fire", title: "Fire", body: "Everything starts at the grill — wood, embers, and an open door to the dining room.", img: dishOctopus },
   { k: "rice", title: "Rice", body: "Bomba from Valencia, slow-toasted, fed with stock for twenty patient minutes.", img: dishPaella },
@@ -180,16 +179,8 @@ function Disciplines() {
           <ul>
             {DISCIPLINES.map((d, i) => (
               <li key={d.k}>
-                <button
-                  onMouseEnter={() => setActive(i)}
-                  onClick={() => setActive(i)}
-                  className="group block w-full text-left"
-                >
-                  <span
-                    className={`block font-display text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-tight transition-colors duration-500 ${
-                      active === i ? "text-ink" : "text-ink/25"
-                    }`}
-                  >
+                <button onMouseEnter={() => setActive(i)} onClick={() => setActive(i)} className="group block w-full text-left">
+                  <span className={`block font-display text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-tight transition-colors duration-500 ${active === i ? "text-ink" : "text-ink/25"}`}>
                     {d.title}
                   </span>
                 </button>
@@ -197,7 +188,6 @@ function Disciplines() {
             ))}
           </ul>
         </div>
-
         <div className="relative">
           <div className="sticky top-32">
             <div className="grain relative aspect-[4/5] overflow-hidden bg-ink/5">
@@ -223,9 +213,7 @@ function Disciplines() {
                 transition={{ duration: 0.4 }}
                 className="mt-8 max-w-md"
               >
-                <p className="text-[10px] uppercase tracking-[0.4em] text-terracotta">
-                  0{active + 1} · {DISCIPLINES[active].title}
-                </p>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-terracotta">0{active + 1} · {DISCIPLINES[active].title}</p>
                 <p className="mt-4 text-lg leading-relaxed text-ink/75">{DISCIPLINES[active].body}</p>
               </motion.div>
             </AnimatePresence>
@@ -236,7 +224,7 @@ function Disciplines() {
   );
 }
 
-/* ───────────────────── MANIFESTO ─ color shift */
+/* ───────────────────── MANIFESTO */
 function Manifesto() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -263,6 +251,7 @@ function Manifesto() {
     </section>
   );
 }
+
 function Line({ text, progress, start, end }: { text: string; progress: ReturnType<typeof useSpring>; start: number; end: number }) {
   const mid = (start + end) / 2;
   const color = useTransform(
@@ -271,75 +260,106 @@ function Line({ text, progress, start, end }: { text: string; progress: ReturnTy
     ["oklch(0.94 0.012 80 / 0.16)", "oklch(0.68 0.10 70)", "oklch(0.94 0.012 80)"],
   );
   return (
-    <motion.p style={{ color }} className="font-display text-3xl leading-tight md:text-5xl">
-      {text}
-    </motion.p>
+    <motion.p style={{ color }} className="font-display text-3xl leading-tight md:text-5xl">{text}</motion.p>
   );
 }
 
-/* ───────────────────── FLOATING FRAMES (bg image + 2 floating over) */
+/* ───────────────────── FLOATING FRAMES — HBA style
+   Dark background. Images slide up one at a time, full-width with side margins.
+   Title pinned at bottom-left throughout. Each image exits through the top. */
+const SCENES = [
+  { img: dishPaella,   label: "01 / The Kitchen", note: "Paella Valenciana" },
+  { img: dishOctopus,  label: "02 / The Grill",   note: "Pulpo a la Brasa"  },
+  { img: interiorWide, label: "03 / The Room",     note: "Forty seats"       },
+];
+
 function FloatingFrames() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const yA = useTransform(scrollYProgress, [0, 1], ["18%", "-12%"]);
-  const yB = useTransform(scrollYProgress, [0, 1], ["28%", "-22%"]);
-  const yBg = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const s = useSpring(scrollYProgress, { stiffness: 50, damping: 18, mass: 0.5 });
+
+  // Each image occupies ~1/3 of the scroll range with overlap for transitions
+  // Image 1: enter 0→0.14 · hold 0.14→0.36 · exit 0.36→0.5
+  const y1 = useTransform(s, [0, 0.14, 0.36, 0.50], ["102vh", "11vh", "11vh", "-90vh"]);
+
+  // Image 2: enter 0.36→0.52 · hold 0.52→0.70 · exit 0.70→0.82
+  const y2 = useTransform(s, [0.36, 0.52, 0.70, 0.82], ["102vh", "11vh", "11vh", "-90vh"]);
+
+  // Image 3: enter 0.70→0.86 · hold 0.86→1
+  const y3 = useTransform(s, [0.70, 0.86, 1], ["102vh", "11vh", "11vh"]);
+
+  const yArr = [y1, y2, y3];
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-cream pt-32 pb-40">
-      <div className="mx-auto max-w-[1800px] px-6 md:px-10">
-        <div className="mb-16 flex items-end justify-between gap-6">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-terracotta">— A room, three views</p>
-            <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.5rem,6vw,5.5rem)] leading-[1.02]">
-              The space is half of the meal.
-            </h2>
-          </div>
-        </div>
+    <section ref={ref} style={{ height: "520vh" }} className="relative">
+      <div className="sticky top-0 h-screen overflow-hidden bg-[oklch(0.10_0.012_200)]">
 
-        <div className="relative aspect-[16/10] overflow-hidden">
-          <motion.img
-            style={{ y: yBg }}
-            src={interiorWide}
-            alt="Bar Estilo dining room"
-            className="absolute inset-[-10%] h-[120%] w-[110%] object-cover"
-          />
-          <div className="grain absolute inset-0" />
+        {/* Top label */}
+        <p className="absolute left-8 top-10 z-30 text-[10px] uppercase tracking-[0.4em] text-terracotta md:left-14 md:top-14">
+          — A room, three views
+        </p>
 
+        {/* Images — rendered in order so last = highest z-index (correct overlap) */}
+        {SCENES.map((scene, i) => (
           <motion.div
-            style={{ y: yA }}
-            className="absolute left-[6%] top-[14%] hidden aspect-[3/4] w-[22%] overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)] md:block"
+            key={scene.label}
+            style={{ y: yArr[i] }}
+            className="absolute inset-x-5 top-0 md:inset-x-14 lg:inset-x-20"
           >
-            <img src={dishPaella} alt="" className="h-full w-full object-cover" />
+            <div className="relative h-[62vh] w-full overflow-hidden">
+              <img
+                src={scene.img}
+                alt={scene.note}
+                className="h-full w-full object-cover"
+              />
+              {/* image label bottom-left */}
+              <div className="absolute bottom-5 left-6 flex items-center gap-4">
+                <span className="text-[10px] uppercase tracking-[0.35em] text-cream/70">{scene.label}</span>
+              </div>
+              {/* image note bottom-right */}
+              <div className="absolute bottom-5 right-6">
+                <span className="font-display text-sm italic text-cream/60">{scene.note}</span>
+              </div>
+            </div>
           </motion.div>
-          <motion.div
-            style={{ y: yB }}
-            className="absolute right-[8%] bottom-[10%] hidden aspect-[4/5] w-[24%] overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)] md:block"
-          >
-            <img src={dishOctopus} alt="" className="h-full w-full object-cover" />
-          </motion.div>
+        ))}
+
+        {/* Pinned bottom title — always visible, like HBA */}
+        <div className="absolute bottom-10 left-8 z-30 md:bottom-14 md:left-14">
+          <h2 className="font-display text-[clamp(1.8rem,4.5vw,4.5rem)] leading-[1.0] text-cream">
+            The space is<br />
+            <span className="italic text-gold">half of the meal.</span>
+          </h2>
         </div>
 
-        <div className="mt-10 grid gap-12 md:grid-cols-3">
+        {/* Bottom-right detail text — desktop only */}
+        <div className="absolute bottom-10 right-8 z-30 hidden gap-12 md:bottom-14 md:right-14 lg:flex">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-ink/40">— The room</p>
-            <p className="mt-3 text-ink/80">Forty seats, one long bar, lime-washed walls and a chimney we built into a wood-fire.</p>
+            <p className="text-[9px] uppercase tracking-[0.4em] text-cream/30">— The room</p>
+            <p className="mt-2 max-w-[180px] text-xs leading-relaxed text-cream/50">
+              Forty seats, one long bar, lime-washed walls.
+            </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-ink/40">— The pass</p>
-            <p className="mt-3 text-ink/80">No service hatch. Plates leave the grill and go straight to the table by hand.</p>
+            <p className="text-[9px] uppercase tracking-[0.4em] text-cream/30">— The pass</p>
+            <p className="mt-2 max-w-[180px] text-xs leading-relaxed text-cream/50">
+              No service hatch. Plates go straight to the table.
+            </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-ink/40">— The night</p>
-            <p className="mt-3 text-ink/80">Candles down low. Records on the deck. A kitchen that doesn't close until the last plate.</p>
+            <p className="text-[9px] uppercase tracking-[0.4em] text-cream/30">— The night</p>
+            <p className="mt-2 max-w-[180px] text-xs leading-relaxed text-cream/50">
+              Candles down low. A kitchen that never quite closes.
+            </p>
           </div>
         </div>
+
       </div>
     </section>
   );
 }
 
-/* ───────────────────── SIX CHEFS, NO SHORTCUTS — redesigned */
+/* ───────────────────── SIX CHEFS */
 function SixChefs() {
   return (
     <section className="relative overflow-hidden bg-ink text-cream">
@@ -349,9 +369,7 @@ function SixChefs() {
         <div className="md:col-span-7">
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold">— A small kitchen</p>
           <h2 className="mt-6 font-display text-[clamp(2.75rem,7vw,6.5rem)] leading-[0.98]">
-            Six chefs, one fire,
-            <br />
-            <span className="italic text-gold">no shortcuts.</span>
+            Six chefs, one fire,<br /><span className="italic text-gold">no shortcuts.</span>
           </h2>
         </div>
         <div className="md:col-span-5">
@@ -360,20 +378,12 @@ function SixChefs() {
             <p>We bake the bread, cure the anchovies, and butcher the whole fish ourselves. The wine list is short on purpose.</p>
             <p>This is the bit of Spain we miss most — the slow, salt-air kind. We try to keep it on the menu.</p>
           </div>
-          <Link
-            to="/about"
-            className="mt-10 inline-flex items-center gap-3 border-b border-cream/40 pb-1 text-[11px] uppercase tracking-[0.3em] hover:text-gold hover:border-gold"
-          >
+          <Link to="/about" className="mt-10 inline-flex items-center gap-3 border-b border-cream/40 pb-1 text-[11px] uppercase tracking-[0.3em] hover:text-gold hover:border-gold">
             Read our story →
           </Link>
         </div>
-
-        <div className="md:col-span-12 mt-6 grid grid-cols-3 gap-4 border-t border-cream/15 pt-10">
-          {[
-            { n: "06", l: "Chefs at the pass" },
-            { n: "40", l: "Iberian bottles" },
-            { n: "01", l: "Wood fire" },
-          ].map((s) => (
+        <div className="mt-6 grid grid-cols-3 gap-4 border-t border-cream/15 pt-10 md:col-span-12">
+          {[{ n: "06", l: "Chefs at the pass" }, { n: "40", l: "Iberian bottles" }, { n: "01", l: "Wood fire" }].map((s) => (
             <div key={s.n}>
               <div className="font-display text-5xl italic text-gold md:text-7xl">{s.n}</div>
               <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-cream/55">{s.l}</p>
@@ -385,7 +395,7 @@ function SixChefs() {
   );
 }
 
-/* ───────────────────── SIGNATURE DISHES — minimal pro carousel */
+/* ───────────────────── SIGNATURE DISHES */
 function Signatures() {
   const dishes = [
     { img: dishPaella, name: "Paella Valenciana", note: "Bomba, saffron, rabbit, snails." },
@@ -409,53 +419,33 @@ function Signatures() {
             </h2>
           </div>
           <div className="hidden items-center gap-3 md:flex">
-            <button onClick={prev} aria-label="Previous" className="cursor-hover h-12 w-12 rounded-full border border-ink/30 text-ink/70 hover:border-ink hover:text-ink">←</button>
-            <button onClick={next} aria-label="Next" className="cursor-hover h-12 w-12 rounded-full border border-ink/30 text-ink/70 hover:border-ink hover:text-ink">→</button>
+            <button onClick={prev} aria-label="Previous" className="h-12 w-12 rounded-full border border-ink/30 text-ink/70 hover:border-ink hover:text-ink">←</button>
+            <button onClick={next} aria-label="Next" className="h-12 w-12 rounded-full border border-ink/30 text-ink/70 hover:border-ink hover:text-ink">→</button>
           </div>
         </div>
-
         <div className="grid items-start gap-12 md:grid-cols-[1.1fr_1fr]">
           <div className="grain relative aspect-[4/5] overflow-hidden bg-ink/5 md:aspect-[5/6]">
             <AnimatePresence mode="wait">
               <motion.img
-                key={i}
-                src={dishes[i].img}
-                alt={dishes[i].name}
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
+                key={i} src={dishes[i].img} alt={dishes[i].name}
+                initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.7, ease: [0.16, 0.84, 0.24, 1] }}
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </AnimatePresence>
           </div>
-
           <div className="md:pt-6">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={i + "-info"}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.4 }}
-              >
-                <p className="text-[10px] uppercase tracking-[0.4em] text-ink/45">
-                  {String(i + 1).padStart(2, "0")} / {String(dishes.length).padStart(2, "0")}
-                </p>
+              <motion.div key={i + "-info"} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.4 }}>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-ink/45">{String(i + 1).padStart(2, "0")} / {String(dishes.length).padStart(2, "0")}</p>
                 <h3 className="mt-4 font-display text-5xl leading-tight md:text-6xl">{dishes[i].name}</h3>
                 <p className="mt-4 max-w-md text-lg text-ink/70">{dishes[i].note}</p>
               </motion.div>
             </AnimatePresence>
-
             <ul className="mt-12 divide-y divide-ink/15 border-y border-ink/15">
               {dishes.map((d, k) => (
                 <li key={d.name}>
-                  <button
-                    onClick={() => setI(k)}
-                    className={`flex w-full items-center justify-between py-4 text-left text-sm transition-colors ${
-                      i === k ? "text-ink" : "text-ink/45 hover:text-ink"
-                    }`}
-                  >
+                  <button onClick={() => setI(k)} className={`flex w-full items-center justify-between py-4 text-left text-sm transition-colors ${i === k ? "text-ink" : "text-ink/45 hover:text-ink"}`}>
                     <span className="flex items-center gap-5">
                       <span className="text-[10px] tracking-[0.3em]">0{k + 1}</span>
                       <span className="font-display text-xl italic">{d.name}</span>
@@ -472,7 +462,7 @@ function Signatures() {
   );
 }
 
-/* ───────────────────── HORIZONTAL SCROLL row */
+/* ───────────────────── HORIZONTAL SCROLL */
 function HorizontalRoll() {
   const imgs = [dishOctopus, interiorWide, dishPaella, barShelf, dishSangria, privateDining, heroTapas, dishJamon];
   return (
@@ -486,10 +476,7 @@ function HorizontalRoll() {
       </div>
       <div className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-6 md:px-10">
         {imgs.map((src, i) => (
-          <div
-            key={i}
-            className="grain relative aspect-[4/5] w-[70vw] flex-shrink-0 snap-start overflow-hidden md:w-[28vw]"
-          >
+          <div key={i} className="grain relative aspect-[4/5] w-[70vw] flex-shrink-0 snap-start overflow-hidden md:w-[28vw]">
             <img src={src} alt="" className="h-full w-full object-cover" />
             <span className="absolute bottom-3 left-4 text-[10px] uppercase tracking-[0.3em] text-cream/85">
               {String(i + 1).padStart(2, "0")} / {String(imgs.length).padStart(2, "0")}
@@ -501,15 +488,9 @@ function HorizontalRoll() {
   );
 }
 
-/* ───────────────────── PRESS strip */
+/* ───────────────────── PRESS */
 function Press() {
-  const quotes = [
-    "Time Out · ★★★★★",
-    "“the kind of place you cancel plans for” — Eater",
-    "Observer Food Monthly · Best New Opening",
-    "“fire-charred brilliance” — FT Weekend",
-    "Guardian · 2024 best tapas in London",
-  ];
+  const quotes = ["Time Out · ★★★★★", "\u201cthe kind of place you cancel plans for\u201d — Eater", "Observer Food Monthly · Best New Opening", "\u201cfire-charred brilliance\u201d — FT Weekend", "Guardian · 2024 best tapas in London"];
   const row = [...quotes, ...quotes];
   return (
     <div className="overflow-hidden border-y border-ink/10 bg-bone py-5">
@@ -520,7 +501,7 @@ function Press() {
   );
 }
 
-/* ───────────────────── PERSPECTIVES — minimal carousel */
+/* ───────────────────── PERSPECTIVES */
 function Perspectives() {
   const items = [
     { img: dishPaella, t: "On the fire", d: "An afternoon at the grill" },
@@ -536,20 +517,11 @@ function Perspectives() {
             <p className="text-[10px] uppercase tracking-[0.4em] text-gold/80">— Perspectives</p>
             <h2 className="mt-5 font-display text-[clamp(2.5rem,6vw,5rem)] leading-[1.02]">Stories from the room.</h2>
           </div>
-          <Link to="/about" className="hidden border-b border-cream pb-1 text-[11px] uppercase tracking-[0.3em] hover:text-gold hover:border-gold md:inline">
-            View all →
-          </Link>
+          <Link to="/about" className="hidden border-b border-cream pb-1 text-[11px] uppercase tracking-[0.3em] hover:text-gold hover:border-gold md:inline">View all →</Link>
         </div>
-        <div className="no-scrollbar grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
           {items.map((p, i) => (
-            <motion.article
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.06 }}
-              className="group"
-            >
+            <motion.article key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: i * 0.06 }} className="group">
               <div className="grain relative aspect-[3/4] overflow-hidden bg-cream/5">
                 <img src={p.img} alt="" className="h-full w-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
               </div>
@@ -566,8 +538,7 @@ function Perspectives() {
   );
 }
 
-/* ───────────────────── GALLERY + OVERLAPPING FAQ
-   The FAQ panel now covers the entire image section above it.    */
+/* ───────────────────── GALLERY + FAQ */
 function GalleryFAQ() {
   const items = [
     { q: "Do you take walk-ins?", a: "Half of every service is held back for walk-ins — the bar is first-come, first-served from 5pm." },
@@ -578,29 +549,18 @@ function GalleryFAQ() {
   ];
   return (
     <section className="relative bg-cream">
-      {/* image section */}
       <div className="relative h-[90vh] overflow-hidden">
         <img src={interiorWide} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="grain absolute inset-0" />
         <div className="absolute inset-0 flex items-end bg-gradient-to-t from-ink/80 via-ink/20 to-transparent p-8 md:p-20">
           <div className="max-w-xl text-cream">
             <p className="text-[10px] uppercase tracking-[0.4em] text-gold">— The room</p>
-            <h2 className="mt-4 font-display text-4xl leading-[1.05] md:text-6xl">
-              Forty seats, one long bar, and a fire that never quite goes out.
-            </h2>
+            <h2 className="mt-4 font-display text-4xl leading-[1.05] md:text-6xl">Forty seats, one long bar, and a fire that never quite goes out.</h2>
           </div>
         </div>
       </div>
-
-      {/* Overlapping FAQ — covers the entire image section */}
       <div className="relative z-10 -mt-[85vh] flex min-h-[85vh] items-end pb-20 md:pb-32">
-        <motion.div
-          initial={{ y: 80, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true, margin: "-20%" }}
-          transition={{ duration: 1.1, ease: [0.16, 0.84, 0.24, 1] }}
-          className="relative mx-auto w-full max-w-[1800px] px-6 md:px-10"
-        >
+        <motion.div initial={{ y: 80, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true, margin: "-20%" }} transition={{ duration: 1.1, ease: [0.16, 0.84, 0.24, 1] }} className="relative mx-auto w-full max-w-[1800px] px-6 md:px-10">
           <div className="ml-auto w-full max-w-3xl bg-cream p-10 shadow-[0_60px_140px_-30px_rgba(0,0,0,0.45)] md:p-16">
             <p className="text-[10px] uppercase tracking-[0.4em] text-terracotta">— FAQ</p>
             <h3 className="mt-4 font-display text-4xl md:text-6xl">Good to know.</h3>
